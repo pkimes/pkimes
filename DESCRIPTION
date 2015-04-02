@@ -1,0 +1,9 @@
+Package: pkimes
+Title: Patrick's R code
+Date: 2015-04-02
+Version: 0.0.0.9000
+Authors@R: person("Patrick", "Kimes", , "patrick.kimes@gmail.com", role = c("aut", "cre"))
+Description: Functions that I (Patrick Kimes) find useful for all analyses/research.
+Depends: R (>= 3.1.1)
+License: MIT
+LazyData: true
