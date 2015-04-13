@@ -4,8 +4,9 @@
 \alias{gg_heatmap}
 \title{plot nice heatmap and dendrograms using ggplot2}
 \usage{
-gg_heatmap(data, distance, linkage, row_sort = TRUE, labmat = NULL,
-  rlabmat = NULL, colbrew = "Set1", rcolbrew = "Set1")
+gg_heatmap(data, distance, linkage, row_sort = TRUE, col_sort = TRUE,
+  labmat = NULL, rlabmat = NULL, colbrew = "Set1", rcolbrew = "Set1",
+  rtext = NULL)
 }
 \arguments{
 \item{data}{a numeric matrix of expression, genes x samples}
@@ -18,13 +19,19 @@ a \code{dist} object}
 \item{row_sort}{a logical whether rows should be reordered based on
 clustering (default = TRUE)}
 
+\item{col_sort}{a logical whether columns should be reordered based on
+clustering (default = TRUE)}
+
 \item{colbrew}{a vector of strings same length as \code{labframe} specifying
 the colors to be used for column labels, if length is 1 same palette is
 repeated, see Details regarding valid strings (default = "Set1")}
 
 \item{rcolbrew}{a vector of strings same length as \code{rlabframe} specifying
-       the colors to be used for row labels, if length is 1 same palette is
-       repeated, see Details regarding valid strings (default = "Set1")}
+the colors to be used for row labels, if length is 1 same palette is
+repeated, see Details regarding valid strings (default = "Set1")}
+
+\item{rtext}{a vector of strings with text annotations for rows of heatmap
+       (default = NULL)}
 
 \item{labframe}{a data.frame of column labels (default = NULL)}
 

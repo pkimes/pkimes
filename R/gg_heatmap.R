@@ -98,7 +98,7 @@ gg_heatmap <- function(data, distance, linkage, row_sort = TRUE, col_sort = TRUE
                      y = gg_hc1$segments$x,
                      yend = gg_hc1$segments$xend,
                      x = (n+.5) + lab_width2/2 + n/6*gg_hc1$segments$y,
-                     xend = (n+.5) + lab_wdith2/2 + n/6*gg_hc1$segments$yend,
+                     xend = (n+.5) + lab_width2/2 + n/6*gg_hc1$segments$yend,
                      size = .3)
     }
 
