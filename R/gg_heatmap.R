@@ -18,6 +18,7 @@
 #'        repeated, see Details regarding valid strings (default = "Set1")
 #' @param rtext a vector of strings with text annotations for rows of heatmap
 #'        (default = NULL)
+#' @param fill_title a character string specifying the fill title (default = NULL)
 #' 
 #' @details
 #' Valid choices of color palettes are listed in \code{RColorBrewer::brewer.pal.info}
@@ -29,7 +30,7 @@
 #' @author Patrick Kimes
 gg_heatmap <- function(data, distance, linkage, row_sort = TRUE, col_sort = TRUE,
                        labmat = NULL, rlabmat = NULL, colbrew = "Set1", rcolbrew = "Set1",
-                       rtext = NULL) {
+                       rtext = NULL, fill_title = NULL) {
 
     if (length(colbrew) == 1) {
         colbrew <- rep(colbrew, length(labmat))
@@ -73,7 +74,7 @@ gg_heatmap <- function(data, distance, linkage, row_sort = TRUE, col_sort = TRUE
     gg_p <- ggplot(gg_data, aes(x=Var2, y=Var1, fill=value)) +
         geom_tile() + theme_bw() +
             theme(axis.text.x=element_text(angle=90, vjust=0.5, hjust=1)) +
-                scale_fill_gradientn("log2(Expr)",
+                scale_fill_gradientn(ifelse(is.null(fill_title), "log2(Expr)", fill_title),
                     colours=c(rep("#ca0020",2), "#f7f7f7", rep("#0571b0", 2)),
                     rescaler = function(x, ...) x, oob=identity,
                     values=c(-vmax, -vmax/2, 0, vmax/2, vmax))
@@ -82,14 +83,16 @@ gg_heatmap <- function(data, distance, linkage, row_sort = TRUE, col_sort = TRUE
     ## add dendrograms to plot
     gg_hc1 <- dendro_data(hc1, hang=.5)
     gg_hc2 <- dendro_data(hc2, hang=.5)
-
+    hc1_max <- max(c(gg_hc1$segments$y, gg_hc1$segments$yend))
+    hc2_max <- max(c(gg_hc2$segments$y, gg_hc2$segments$yend))
+    
     if (col_sort) {
         gg_p <- gg_p +
             annotate("segment",
                      x = gg_hc2$segments$x,
                      xend = gg_hc2$segments$xend,
-                     y = (p+.5) + lab_width/2 + p/6*gg_hc2$segments$y,
-                     yend = (p+.5) + lab_width/2 + p/6*gg_hc2$segments$yend,
+                     y = (p+.5) + lab_width/2 + p/4*gg_hc2$segments$y/hc2_max,
+                     yend = (p+.5) + lab_width/2 + p/4*gg_hc2$segments$yend/hc2_max,
                      size = .3)
     }
     if (row_sort) {
@@ -97,8 +100,8 @@ gg_heatmap <- function(data, distance, linkage, row_sort = TRUE, col_sort = TRUE
             annotate("segment",
                      y = gg_hc1$segments$x,
                      yend = gg_hc1$segments$xend,
-                     x = (n+.5) + lab_width2/2 + n/6*gg_hc1$segments$y,
-                     xend = (n+.5) + lab_width2/2 + n/6*gg_hc1$segments$yend,
+                     x = (n+.5) + lab_width2/2 + n/4*gg_hc1$segments$y/hc1_max,
+                     xend = (n+.5) + lab_width2/2 + n/4*gg_hc1$segments$yend/hc1_max,
                      size = .3)
     }
 
@@ -111,15 +114,15 @@ gg_heatmap <- function(data, distance, linkage, row_sort = TRUE, col_sort = TRUE
             scale_x_discrete(breaks=NULL) +
                 scale_y_continuous(breaks=NULL, expand = c(0,0))
 
-    ## extend range of plot
-    if (col_sort) {
-        gg_p <- gg_p +
-            geom_hline(yintercept = (p+1)*(1.01) + p/5.7*max(gg_hc2$segments$y), color="white")
-    }
-    if (row_sort) {
-        gg_p <- gg_p +
-            geom_vline(xintercept = (n+1)*(1.01) + n/5.7*max(gg_hc1$segments$y), color="white")
-    }
+    ## ## extend range of plot
+    ## if (col_sort) {
+    ##     gg_p <- gg_p +
+    ##         geom_hline(yintercept = (p+1)*(1.01) + p/5.7*max(gg_hc2$segments$y), color="white")
+    ## }
+    ## if (row_sort) {
+    ##     gg_p <- gg_p +
+    ##         geom_vline(xintercept = (n+1)*(1.01) + n/5.7*max(gg_hc1$segments$y), color="white")
+    ## }
     if (!is.null(rtext)) {
         gg_p <- gg_p +
             geom_vline(xintercept = -(length(rlabmat)+5)*lab_width2, color="white")
