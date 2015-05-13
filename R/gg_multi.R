@@ -16,7 +16,6 @@
 #' @import grid
 #' @export
 #' @author Winston Chang (http://www.cookbook-r.com/)
-
 gg_multi <- function(..., plotlist = NULL, cols = 1, layout = NULL) {
     plots <- c(list(...), plotlist)
     numPlots <- length(plots)
