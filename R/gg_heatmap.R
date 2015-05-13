@@ -114,22 +114,10 @@ gg_heatmap <- function(data, distance, linkage, row_sort = TRUE, col_sort = TRUE
             scale_x_discrete(breaks=NULL) +
                 scale_y_continuous(breaks=NULL, expand = c(0,0))
 
-    ## ## extend range of plot
-    ## if (col_sort) {
-    ##     gg_p <- gg_p +
-    ##         geom_hline(yintercept = (p+1)*(1.01) + p/5.7*max(gg_hc2$segments$y), color="white")
-    ## }
-    ## if (row_sort) {
-    ##     gg_p <- gg_p +
-    ##         geom_vline(xintercept = (n+1)*(1.01) + n/5.7*max(gg_hc1$segments$y), color="white")
-    ## }
     if (!is.null(rtext)) {
         gg_p <- gg_p +
             geom_vline(xintercept = -(length(rlabmat)+5)*lab_width2, color="white")
     }
-
-    ## gg_p <- gg_p + geom_hline(yintercept = 0)
-    ## gg_p <- gg_p + geom_hline(yintercept = 1)
     
     if (!is.null(labmat)) {
         if (col_sort) { iorder <- hc2$order } else { iorder <- 1:n }
@@ -145,6 +133,12 @@ gg_heatmap <- function(data, distance, linkage, row_sort = TRUE, col_sort = TRUE
                 ## annotate("text", x=0, y=-1+lab_width/2-i*lab_width,
                 ##          hjust=1, label=names(labmat)[i])
         }
+        gg_p <- gg_p +
+            annotate("segment",
+                     x = .5, xend = n + .5,
+                     y = .5 - ((0:length(labmat))+.5)*lab_width,
+                     yend = .5 - ((0:length(labmat))+.5)*lab_width,
+                     size=.2)
     }
 
     if (!is.null(rlabmat)) {
@@ -165,7 +159,7 @@ gg_heatmap <- function(data, distance, linkage, row_sort = TRUE, col_sort = TRUE
         if (row_sort) { iorder <- hc1$order } else { iorder <- 1:p }
         gg_p <- gg_p +
             annotate("text",
-                     x = rep(-length(rlabmat)*lab_width2, p),
+                     x = rep(-(.5+length(rlabmat))*lab_width2, p),
                      y = 1:p, size = 3, hjust = 1, 
                      label = rtext[iorder])
     }
