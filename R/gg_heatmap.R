@@ -1,6 +1,6 @@
 #' plot nice heatmap and dendrograms using ggplot2
 #'
-#' @param data a numeric matrix of expression, genes x samples 
+#' @param data a numeric matrix of expression, genes x samples, or a \code{dist} object
 #' @param distance a character string for \code{dist}, or a function which returns
 #'        a \code{dist} object (default = "euclidean") 
 #' @param linkage a character string for \code{hclust} to use for clustering
@@ -44,9 +44,27 @@ gg_heatmap <- function(data, distance = "euclidean", linkage = "average",
     .getpal <- function(x) { suppressWarnings(c("#000000", brewer.pal(100, x))) }
     setlist1 <- lapply(colbrew, .getpal)
     setlist2 <- lapply(rcolbrew, .getpal)
-    
-    p <- nrow(data)
-    n <- ncol(data)
+
+    if (is(data, "dist")) {
+        dmat1 <- data
+        dmat2 <- data
+        data <- as.matrix(data)
+        p <- nrow(data)
+        n <- ncol(data)
+        print(p)
+        print(n)
+    } else {
+        p <- nrow(data)
+        n <- ncol(data)
+        if (is.character(distance)) {
+            dmat1 <- dist(data, distance)
+            dmat2 <- dist(t(data), distance)
+        } else { 
+            dmat1 <- distance(t(data)) ## rows, genes
+            dmat2 <- distance(data) ## columns, samples
+        }
+    }    
+
 
     if (!is.null(rtext) & length(rtext) != p) {
         rtext <- NULL
@@ -56,19 +74,14 @@ gg_heatmap <- function(data, distance = "euclidean", linkage = "average",
     lab_width <- p / 25
     lab_width2 <- n / 25
     
-    if (is.character(distance)) {
-        dmat1 <- dist(data, distance)
-        dmat2 <- dist(t(data), distance)
-    } else { 
-        dmat1 <- distance(t(data)) ## rows, genes
-        dmat2 <- distance(data) ## columns, samples
-    }
-    
     hc1 <- hclust(dmat1, method=linkage)
     hc2 <- hclust(dmat2, method=linkage)
+    print(length(hc2$order))
 
     if (col_sort) { data <- data[, hc2$order] }
     if (row_sort) { data <- data[hc1$order, ] }
+    rownames(data) <- 1:p
+    colnames(data) <- 1:n
     gg_data <- melt(data)
 
     ## basic plot structure
