@@ -2,8 +2,9 @@
 #'
 #' @param data a numeric matrix of expression, genes x samples 
 #' @param distance a character string for \code{dist}, or a function which returns
-#'        a \code{dist} object
+#'        a \code{dist} object (default = "euclidean") 
 #' @param linkage a character string for \code{hclust} to use for clustering
+#'        (default = "average")
 #' @param labframe a data.frame of column labels (default = NULL)
 #' @param rlabframe a data.frame of row labels (default = NULL)
 #' @param row_sort a logical whether rows should be reordered based on
@@ -28,7 +29,8 @@
 #' @import RColorBrewer ggplot2
 #' @export
 #' @author Patrick Kimes
-gg_heatmap <- function(data, distance, linkage, row_sort = TRUE, col_sort = TRUE,
+gg_heatmap <- function(data, distance = "euclidean", linkage = "average",
+                       row_sort = TRUE, col_sort = TRUE,
                        labmat = NULL, rlabmat = NULL, colbrew = "Set1", rcolbrew = "Set1",
                        rtext = NULL, fill_title = NULL) {
 
