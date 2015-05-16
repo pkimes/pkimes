@@ -45,14 +45,14 @@ gg_heatmap <- function(data, distance = "euclidean", linkage = "average",
     setlist1 <- lapply(colbrew, .getpal)
     setlist2 <- lapply(rcolbrew, .getpal)
 
+    dist_in <- FALSE
     if (is(data, "dist")) {
+        dist_in <- TRUE
         dmat1 <- data
         dmat2 <- data
         data <- as.matrix(data)
         p <- nrow(data)
         n <- ncol(data)
-        print(p)
-        print(n)
     } else {
         p <- nrow(data)
         n <- ncol(data)
@@ -76,7 +76,6 @@ gg_heatmap <- function(data, distance = "euclidean", linkage = "average",
     
     hc1 <- hclust(dmat1, method=linkage)
     hc2 <- hclust(dmat2, method=linkage)
-    print(length(hc2$order))
 
     if (col_sort) { data <- data[, hc2$order] }
     if (row_sort) { data <- data[hc1$order, ] }
@@ -88,12 +87,18 @@ gg_heatmap <- function(data, distance = "euclidean", linkage = "average",
     vmax <- max(abs(gg_data$value))*1.01
     gg_p <- ggplot(gg_data, aes(x=Var2, y=Var1, fill=value)) +
         geom_tile() + theme_bw() +
-            theme(axis.text.x=element_text(angle=90, vjust=0.5, hjust=1)) +
-                scale_fill_gradientn(ifelse(is.null(fill_title), "log2(Expr)", fill_title),
-                    colours=c(rep("#ca0020",2), "#f7f7f7", rep("#0571b0", 2)),
-                    rescaler = function(x, ...) x, oob=identity,
-                    values=c(-vmax, -vmax/2, 0, vmax/2, vmax))
-    ## low="#b2182b", high="#2166ac"
+            theme(axis.text.x=element_text(angle=90, vjust=0.5, hjust=1))
+
+    if (dist_in) {
+        gg_p <- gg_p +
+            scale_fill_gradient(high="#f7fbff", low="#2171b5", limits=c(-vmax*.01, vmax))
+    } else {
+        gg_p <- gg_p +
+            scale_fill_gradientn(ifelse(is.null(fill_title), "log2(Expr)", fill_title),
+                                 colours=c(rep("#ca0020",2), "#f7f7f7", rep("#0571b0", 2)),
+                                 rescaler = function(x, ...) x, oob=identity,
+                                 values=c(-vmax, -vmax/2, 0, vmax/2, vmax))
+    }
     
     ## add dendrograms to plot
     gg_hc1 <- dendro_data(hc1, hang=.5)
