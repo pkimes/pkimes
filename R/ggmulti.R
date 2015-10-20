@@ -1,6 +1,6 @@
-#' multiple plot function for ggplot2
+#' @title Plot Multiple ggplot2 Objects
 #'
-#' Function is reporduced from http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
+#' Function is reproduced from http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
 #'
 #' @param ... sequence of \code{ggplot} objects
 #' @param plotlist list of \code{ggplot} objects if \code{...} not passed (default = NULL)
@@ -14,9 +14,10 @@
 #' 3 will go all the way across the bottom.
 #'
 #' @import grid
-#' @export
 #' @author Winston Chang (http://www.cookbook-r.com/)
-gg_multi <- function(..., plotlist = NULL, cols = 1, layout = NULL) {
+#' @export
+
+ggmulti <- function(..., plotlist = NULL, cols = 1, layout = NULL) {
     plots <- c(list(...), plotlist)
     numPlots <- length(plots)
 

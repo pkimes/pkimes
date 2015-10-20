@@ -1,5 +1,8 @@
-#' plot nice heatmap and dendrograms using ggplot2
+#' @title Heatmaps Using ggplot2
 #'
+#' This function can be used to create heatmaps with dendrograms similar to \code{heatmap.2}
+#' using \code{ggplot2} and \code{ggdendro} for a more "modern" and clean appearance.
+#' 
 #' @param data a numeric matrix of expression, genes x samples, or a \code{dist} object
 #' @param distance a character string for \code{dist}, or a function which returns
 #'        a \code{dist} object (default = "euclidean") 
@@ -24,21 +27,23 @@
 #' @details
 #' Valid choices of color palettes are listed in \code{RColorBrewer::brewer.pal.info}
 #' 
-#' @return a \code{ggplot} object
+#' @return
+#' a \code{ggplot} object
 #'
-#' @import RColorBrewer ggplot2
-#' @export
+#' @import RColorBrewer ggplot2 ggdendro reshape2
 #' @author Patrick Kimes
-gg_heatmap <- function(data, distance = "euclidean", linkage = "average",
+#' @export
+
+ggheatmap <- function(data, distance = "euclidean", linkage = "average",
                        row_sort = TRUE, col_sort = TRUE,
-                       labmat = NULL, rlabmat = NULL, colbrew = "Set1", rcolbrew = "Set1",
+                       labframe = NULL, rlabframe = NULL, colbrew = "Set1", rcolbrew = "Set1",
                        rtext = NULL, fill_title = NULL) {
 
     if (length(colbrew) == 1) {
-        colbrew <- rep(colbrew, length(labmat))
+        colbrew <- rep(colbrew, length(labframe))
     }
     if (length(rcolbrew) == 1) {
-        rcolbrew <- rep(rcolbrew, length(rlabmat))
+        rcolbrew <- rep(rcolbrew, length(rlabframe))
     }
 
     .getpal <- function(x) { suppressWarnings(c("#000000", brewer.pal(100, x))) }
@@ -136,41 +141,41 @@ gg_heatmap <- function(data, distance = "euclidean", linkage = "average",
 
     if (!is.null(rtext)) {
         gg_p <- gg_p +
-            geom_vline(xintercept = -(length(rlabmat)+5)*lab_width2, color="white")
+            geom_vline(xintercept = -(length(rlabframe)+5)*lab_width2, color="white")
     }
     
-    if (!is.null(labmat)) {
+    if (!is.null(labframe)) {
         if (col_sort) { iorder <- hc2$order } else { iorder <- 1:n }
-        for (i in 1:length(labmat)) {
+        for (i in 1:length(labframe)) {
             gg_p <- gg_p +
                 annotate("rect",
                          xmin = (1:n) - .5,
                          xmax = (1:n) + .5,
                          ymin = rep(.5 - (i-.5)*lab_width, n),
                          ymax = rep(.5 - (i+.5)*lab_width, n), 
-                         fill = setlist1[[i]][1 + labmat[iorder, i]],
+                         fill = setlist1[[i]][1 + labframe[iorder, i]],
                          alpha=2/3) #+
                 ## annotate("text", x=0, y=-1+lab_width/2-i*lab_width,
-                ##          hjust=1, label=names(labmat)[i])
+                ##          hjust=1, label=names(labframe)[i])
         }
         gg_p <- gg_p +
             annotate("segment",
                      x = .5, xend = n + .5,
-                     y = .5 - ((0:length(labmat))+.5)*lab_width,
-                     yend = .5 - ((0:length(labmat))+.5)*lab_width,
+                     y = .5 - ((0:length(labframe))+.5)*lab_width,
+                     yend = .5 - ((0:length(labframe))+.5)*lab_width,
                      size=.2)
     }
 
-    if (!is.null(rlabmat)) {
+    if (!is.null(rlabframe)) {
         if (row_sort) { iorder <- hc1$order } else { iorder <- 1:p }
-        for (i in 1:length(rlabmat)) {
+        for (i in 1:length(rlabframe)) {
             gg_p <- gg_p +
                 annotate("rect",
                          ymin = (1:p) - .5,
                          ymax = (1:p) + .5,
                          xmin = rep(.5 - (i+.5)*lab_width2, p),
                          xmax = rep(.5 - (i-.5)*lab_width2, p), 
-                         fill = setlist2[[i]][1 + rlabmat[iorder, i]],
+                         fill = setlist2[[i]][1 + rlabframe[iorder, i]],
                          alpha=2/3)
         }
     }
@@ -179,7 +184,7 @@ gg_heatmap <- function(data, distance = "euclidean", linkage = "average",
         if (row_sort) { iorder <- hc1$order } else { iorder <- 1:p }
         gg_p <- gg_p +
             annotate("text",
-                     x = rep(-(.5+length(rlabmat))*lab_width2, p),
+                     x = rep(-(.5+length(rlabframe))*lab_width2, p),
                      y = 1:p, size = 3, hjust = 1, 
                      label = rtext[iorder])
     }
